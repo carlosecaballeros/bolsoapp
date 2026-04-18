@@ -3,221 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Panel - BolsoApp Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Panel Administrador - BolsoApp</title>
+    <link rel="stylesheet" href="stiles.css">
     <style>
-        :root {
-            --primary: #2D5AFE;
-            --danger: #EF4444;
-            --success: #10B981;
-            --bg: #0F172A;
-            --card: #1E293B;
-            --text-muted: #94A3B8;
+        /* Estilos rápidos para el modal y la tabla */
+        .modal {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 1000; 
+            overflow-y: auto;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: white; padding-bottom: 30px; }
-
-        /* Navegación Superior */
-        nav { 
-            display: flex; 
-            background: var(--card); 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            border-bottom: 1px solid #334155; 
-        }
-        .nav-btn { 
-            flex: 1; 
-            padding: 15px; 
-            border: none; 
-            background: none; 
-            color: var(--text-muted); 
-            font-weight: 700; 
-            cursor: pointer; 
-            font-size: 11px; 
-            text-transform: uppercase;
-        }
-        .nav-btn.active { 
-            color: white; 
-            border-bottom: 3px solid var(--primary); 
-            background: rgba(45, 90, 254, 0.1); 
-        }
-
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        .section { display: none; }
-        .section.active { display: block; }
-
-        /* Tarjetas de Datos */
-        .card { 
-            background: var(--card); 
+        .modal-content {
+            background: white; 
+            margin: 5% auto; 
             padding: 20px; 
-            border-radius: 20px; 
-            margin-bottom: 20px; 
-            border: 1px solid #334155; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            width: 95%; 
+            max-width: 800px; 
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
         }
-
-        h2 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        
-        label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-        input, textarea, select { 
+        table {
             width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+        }
+        th, td {
             padding: 12px; 
-            background: #0F172A; 
-            border: 1px solid #334155; 
-            border-radius: 12px; 
+            border-bottom: 1px solid #ddd; 
+            text-align: left;
+        }
+        th { background-color: #f8f9fa; }
+        .btn-delete {
+            background: #ff4d4d; 
             color: white; 
-            margin-bottom: 15px; 
-            font-size: 16px; 
-        }
-
-        .btn { 
-            width: 100%; 
-            padding: 15px; 
-            border-radius: 12px; 
             border: none; 
-            font-weight: 800; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            cursor: pointer;
+        }
+        .btn-delete:hover { background: #cc0000; }
+        .btn-main {
+            background-color: #007bff; 
+            color: white; 
+            padding: 15px 25px; 
+            border: none; 
+            border-radius: 8px; 
             cursor: pointer; 
-            transition: 0.3s; 
-            font-size: 14px;
+            font-size: 16px;
+            margin: 10px;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn:active { transform: scale(0.98); opacity: 0.8; }
-
-        /* Listados */
-        .item-list { 
-            background: rgba(255,255,255,0.03); 
-            padding: 12px; 
-            border-radius: 12px; 
-            margin-top: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            border-left: 4px solid var(--primary);
-        }
-        .badge { font-size: 10px; padding: 4px 8px; border-radius: 5px; font-weight: 800; }
-        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
     </style>
 </head>
 <body>
 
-    <nav>
-        <button class="nav-btn active" onclick="showTab('seguridad')">Seguridad</button>
-        <button class="nav-btn" onclick="showTab('grupos')">Grupos</button>
-        <button class="nav-btn" onclick="showTab('solicitudes')">Revisiones</button>
-    </nav>
-
-    <div class="container">
+    <div style="text-align: center; padding: 50px;">
+        <h1>Panel de Control BolsoApp</h1>
         
-        <div id="seguridad" class="section active">
-            <div class="card">
-                <h2>🚫 Banear Identidad</h2>
-                <label>Cédula (V12345678)</label>
-                <input type="text" id="banDni" placeholder="Ingrese número de cédula">
-                <label>Nombre Completo</label>
-                <input type="text" id="banNombre" placeholder="Nombre del infractor">
-                <label>Motivo</label>
-                <input type="text" id="banMotivo" placeholder="Ej: No pagó cuota 3">
-                <button class="btn btn-danger" onclick="gestionarBaneo(true)">EJECUTAR BLOQUEO</button>
-            </div>
+        <button class="btn-main" id="btnVerUsuarios">👥 Ver Usuarios Suscritos</button>
+        <button class="btn-main" onclick="window.location.reload()" style="background-color: #28a745;">🔄 Actualizar Datos</button>
+    </div>
 
-            <div class="card">
-                <h2>🛡️ Desbloquear</h2>
-                <input type="text" id="unbanDni" placeholder="Cédula a desbloquear">
-                <button class="btn btn-primary" style="background: #475569;" onclick="gestionarBaneo(false)">QUITAR DE LISTA NEGRA</button>
+    <div id="modalUsuarios" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                <h2 style="margin: 0;">Usuarios Registrados</h2>
+                <button id="btnCerrarModal" style="background: #666; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Cerrar</button>
             </div>
-        </div>
-
-        <div id="grupos" class="section">
-            <div class="card">
-                <h2>📦 Crear Nuevo Bolso</h2>
-                <label>Nombre del Grupo</label>
-                <input type="text" id="gNombre" placeholder="Ej: Bolso Express Mayo">
-                <label>Monto Total ($)</label>
-                <input type="number" id="gMonto" placeholder="Ej: 100">
-                <label>Máx. Participantes</label>
-                <input type="number" id="gMax" placeholder="Ej: 10">
-                <button class="btn btn-primary" onclick="crearGrupo()">CREAR GRUPO</button>
-            </div>
-
-            <div class="card">
-                <h2>Lista de Grupos</h2>
-                <div id="listaGruposUI">Cargando grupos...</div>
+            
+            <div id="listaUsuariosContenedor">
+                <p id="mensajeCarga" style="text-align: center; padding: 20px;">Cargando base de datos...</p>
+                <table id="tablaUsuarios" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>WhatsApp</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaUsuarios">
+                        </tbody>
+                </table>
             </div>
         </div>
-
-        <div id="solicitudes" class="section">
-            <h2>Pendientes de Verificación</h2>
-            <div id="listaVerificacionesUI">
-                <p style="color: var(--text-muted); text-align: center; margin-top: 20px;">No hay solicitudes nuevas.</p>
-            </div>
-        </div>
-
     </div>
 
     <script type="module">
         import { db } from './firebase-config.js';
-        import { doc, setDoc, deleteDoc, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Cambio de pestañas
-        window.showTab = function(tabId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
+        const btnVerUsuarios = document.getElementById('btnVerUsuarios');
+        const modalUsuarios = document.getElementById('modalUsuarios');
+        const btnCerrarModal = document.getElementById('btnCerrarModal');
+        const cuerpoTabla = document.getElementById('cuerpoTablaUsuarios');
+        const tabla = document.getElementById('tablaUsuarios');
+        const mensajeCarga = document.getElementById('mensajeCarga');
 
-        // --- LÓGICA DE SEGURIDAD ---
-        window.gestionarBaneo = async function(banear) {
-            const dni = banear ? document.getElementById('banDni').value.trim() : document.getElementById('unbanDni').value.trim();
-            if(!dni) return alert("Por favor ingresa la cédula.");
+        // Función para cargar usuarios desde Firestore
+        async function cargarUsuarios() {
+            cuerpoTabla.innerHTML = '';
+            mensajeCarga.style.display = 'block';
+            mensajeCarga.innerText = "Conectando con Firebase...";
+            tabla.style.display = 'none';
 
             try {
-                if(banear) {
-                    const nombre = document.getElementById('banNombre').value;
-                    const motivo = document.getElementById('banMotivo').value;
-                    await setDoc(doc(db, "lista_negra", dni), {
-                        nombre, motivo, fecha: new Date().toLocaleString()
-                    });
-                    alert("Usuario bloqueado con éxito.");
-                } else {
-                    await deleteDoc(doc(db, "lista_negra", dni));
-                    alert("Usuario desbloqueado.");
+                const querySnapshot = await getDocs(collection(db, "usuarios"));
+                
+                if (querySnapshot.empty) {
+                    mensajeCarga.innerText = "No hay usuarios registrados en la colección 'usuarios'.";
+                    return;
                 }
-            } catch (e) { alert("Error: " + e.message); }
-        }
 
-        // --- LÓGICA DE GRUPOS ---
-        window.crearGrupo = async function() {
-            const nombre = document.getElementById('gNombre').value;
-            const monto = document.getElementById('gMonto').value;
-            const max = document.getElementById('gMax').value;
+                querySnapshot.forEach((usuarioDoc) => {
+                    const data = usuarioDoc.data();
+                    const id = usuarioDoc.id;
 
-            if(!nombre || !monto) return alert("Completa los datos del grupo");
-
-            try {
-                await addDoc(collection(db, "grupos"), {
-                    nombre, monto, participantesMax: max, participantesActuales: 0, status: "abierto"
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${data.nombre || 'Sin nombre'} ${data.apellido || ''}</td>
+                        <td>${data.whatsapp || 'N/A'}</td>
+                        <td>
+                            <button class="btn-delete" data-id="${id}">Eliminar</button>
+                        </td>
+                    `;
+                    cuerpoTabla.appendChild(fila);
                 });
-                alert("Grupo creado con éxito");
-            } catch (e) { alert("Error: " + e.message); }
+
+                mensajeCarga.style.display = 'none';
+                tabla.style.display = 'table';
+
+                // Configurar eventos para los botones de eliminar
+                document.querySelectorAll('.btn-delete').forEach(boton => {
+                    boton.addEventListener('click', async (e) => {
+                        const userId = e.target.getAttribute('data-id');
+                        if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+                            await eliminarUsuario(userId);
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error al obtener usuarios: ", error);
+                mensajeCarga.innerText = "Error de conexión. Revisa la consola.";
+            }
         }
 
-        // Cargar grupos en tiempo real
-        onSnapshot(collection(db, "grupos"), (snapshot) => {
-            const div = document.getElementById('listaGruposUI');
-            div.innerHTML = "";
-            snapshot.forEach(doc => {
-                const g = doc.data();
-                div.innerHTML += `
-                    <div class="item-list">
-                        <div><b>${g.nombre}</b><br><small>$${g.monto}</small></div>
-                        <span class="badge badge-red">${g.participantesActuales}/${g.participantesMax}</span>
-                    </div>`;
-            });
-        });
+        // Función para eliminar usuario
+        async function eliminarUsuario(id) {
+            try {
+                await deleteDoc(doc(db, "usuarios", id));
+                alert("Usuario eliminado correctamente.");
+                cargarUsuarios(); // Recargar lista
+            } catch (error) {
+                alert("Error al eliminar: " + error.message);
+            }
+        }
+
+        // Abrir y cerrar Modal
+        btnVerUsuarios.onclick = () => {
+            modalUsuarios.style.display = 'block';
+            cargarUsuarios();
+        };
+
+        btnCerrarModal.onclick = () => {
+            modalUsuarios.style.display = 'none';
+        };
+
+        window.onclick = (event) => {
+            if (event.target == modalUsuarios) {
+                modalUsuarios.style.display = 'none';
+            }
+        };
     </script>
 </body>
 </html>
