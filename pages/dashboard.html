@@ -5,30 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Inicio - BolsoApp</title>
     <style>
-        /* [Tus estilos de antes...] */
         :root { --primary: #2D5AFE; --bg: #F8FAFC; --card: #FFFFFF; --text-main: #1E293B; --text-muted: #64748B; --border: #E2E8F0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 110px; display: none; } /* OCULTAMOS TODO EL BODY POR DEFECTO */
-        
-        /* Pantalla de carga */
-        #loader { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: white; display: flex; justify-content: center; align-items: center; z-index: 9999; 
-        }
+        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 110px; } /* Ya no está oculto */
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .balance-card { background: var(--primary); color: white; padding: 25px; border-radius: 24px; margin-bottom: 20px; }
+        .balance-label { font-size: 14px; opacity: 0.8; }
+        .balance-amount { font-size: 32px; font-weight: 800; margin: 5px 0; }
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid var(--border); z-index: 1000; }
+        .tab-item { text-align: center; text-decoration: none; color: var(--text-muted); font-size: 10px; font-weight: 600; width: 20%; }
+        .tab-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
-    <div id="loader">
-        <div style="text-align: center;">
-            <img src="assets/BolsoApp.png" style="width: 80px; margin-bottom: 10px;">
-            <p>Verificando sesión...</p>
-        </div>
-    </div>
-
     <div class="container">
         <header style="margin-bottom: 25px;">
-            <h1>Hola, <span id="userName">...</span> 👋</h1>
-            <p style="color: var(--text-muted);">Este es el estado de tu ahorro.</p>
+            <h1>Hola, <span id="userName">Cargando...</span> 👋</h1>
+            <p style="color: var(--text-muted);">Estado de tu cuenta.</p>
         </header>
 
         <div class="balance-card">
@@ -38,8 +31,8 @@
     </div>
 
     <nav class="tab-bar">
-        <a href="dashboard.html" class="tab-item active"><span class="tab-icon">🏠</span>Inicio</a>
-        <a href="profile.html" class="tab-item"><span class="tab-icon">⚙️</span>Perfil</a>
+        <a href="dashboard.html" class="tab-item active">🏠<br>Inicio</a>
+        <a href="profile.html" class="tab-item">⚙️<br>Perfil</a>
     </nav>
 
     <script type="module">
@@ -47,28 +40,29 @@
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const loader = document.getElementById('loader');
+        console.log("Comprobando conexión con Firebase...");
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                console.log("Usuario detectado:", user.uid);
-                
-                // 1. Buscamos los datos en Firestore
+                console.log("✅ Sesión activa detectada para:", user.email);
                 try {
-                    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+                    const docRef = doc(db, "usuarios", user.uid);
+                    const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         document.getElementById('userName').innerText = docSnap.data().nombre;
+                    } else {
+                        document.getElementById('userName').innerText = "Usuario";
                     }
-                } catch (e) { console.error(e); }
-
-                // 2. MOSTRAR LA PÁGINA Y QUITAR EL LOADER
-                document.body.style.display = "block";
-                loader.style.display = "none";
-
+                } catch (error) {
+                    console.error("❌ Error al leer Firestore:", error);
+                    alert("Error al cargar datos: " + error.message);
+                }
             } else {
-                // Si realmente no hay usuario, mandamos al index
-                console.log("No hay sesión, redirigiendo...");
-                window.location.href = "index.html";
+                console.log("❌ No hay usuario logueado.");
+                // Si no hay usuario, esperamos 3 segundos para que veas la página y luego redirigimos
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 3000);
             }
         });
     </script>
