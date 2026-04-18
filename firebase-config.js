@@ -5,9 +5,9 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Tu configuración extraída directamente de la consola de Firebase
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBmyWKPTd67VaJnGPlYo_KlnloQ00hUkiU",
+  apiKey: "AIzaSyBmyWKPTd67VaJnGP1Yo_KlnloQ00hUkiU",
   authDomain: "bolsoapp-fb89e.firebaseapp.com",
   projectId: "bolsoapp-fb89e",
   storageBucket: "bolsoapp-fb89e.firebasestorage.app",
