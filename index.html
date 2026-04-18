@@ -2,372 +2,149 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#2D5AFE">
-    <meta name="description" content="BolsoApp - Ahorro colectivo transparente">
-    <title>BolsoApp - Finanzas Colaborativas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BolsoApp - Registro</title>
+    <link rel="stylesheet" href="stiles.css">
     <style>
-        :root {
-            --primary: #2D5AFE;    /* Azul Moderno */
-            --secondary: #00D084;  /* Verde de éxito */
-            --bg: #F8FAFC;         /* Fondo claro y limpio */
-            --card: #FFFFFF;
-            --text-title: #1E293B; /* Azul grisáceo oscuro */
-            --text-body: #64748B;  /* Gris profesional */
-            --border: #E2E8F0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-title);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 40px 25px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--card);
-        }
-
-        /* --- LOGO Y ENCABEZADO --- */
-        .logo {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .logo-image {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            border-radius: 22px;
-            /* Sombra sutil para dar profundidad profesional */
-            box-shadow: 0 10px 20px rgba(45, 90, 254, 0.12);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--text-title);
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 20px;
-        }
-
-        .description {
-            text-align: center;
-            font-size: 15px;
-            color: var(--text-body);
-            margin-bottom: 40px;
-            padding: 0 10px;
-        }
-
-        /* --- BOTONES --- */
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: 16px;
-            width: 100%;
-            cursor: pointer;
+        /* Estilos adicionales para los mensajes de validación */
+        .feedback-mensaje {
+            font-size: 0.85em;
+            margin-top: 5px;
+            font-weight: bold;
+            min-height: 1.2em;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(45, 90, 254, 0.2);
         }
-
-        .btn-primary:active {
-            transform: scale(0.98);
+        input {
+            transition: border-color 0.3s ease;
         }
-
-        .btn-secondary {
-            background: #F1F5F9;
-            color: var(--text-title);
-            border: 1px solid var(--border);
-            padding: 14px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 14px;
-            width: 100%;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background: #E2E8F0;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .btn-row .btn-secondary {
-            flex: 1;
-        }
-
-        /* --- FORMULARIOS --- */
-        .input-group {
-            position: relative;
-            margin-bottom: 16px;
-        }
-
-        .input-group input {
-            width: 100%;
-            background: #F8FAFC;
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            padding: 16px;
-            color: var(--text-title);
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(45, 90, 254, 0.1);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: var(--text-body);
-        }
-
-        /* --- LEGALES Y OTROS --- */
-        .legal-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: auto; /* Empuja al final */
-            padding-top: 40px;
-        }
-
-        .legal-links a {
-            color: var(--text-body);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .version {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-body);
-            opacity: 0.6;
-            margin-top: 15px;
-        }
-
-        /* --- COMPONENTES DINÁMICOS --- */
-        .screen { display: none; }
-        .screen.active { display: block; }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1E293B;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 2000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        /* Animaciones suaves */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .active { animation: fadeIn 0.4s ease-out; }
     </style>
 </head>
 <body>
 
-    <div id="welcomeScreen" class="screen active">
-        <div class="container">
-            <div class="logo">
-                <img src="BolsoApp.png" alt="BolsoApp" class="logo-image">
+    <div class="registro-container">
+        <h2>Crear cuenta</h2>
+        <p>Regístrate para empezar a usar BolsoApp</p>
+        
+        <form id="registroForm">
+            <input type="text" id="nombre" placeholder="Nombre" required>
+            <input type="text" id="apellido" placeholder="Apellido" required>
+            <input type="text" id="whatsapp" placeholder="Número de WhatsApp" required>
+            <input type="text" id="cedula" placeholder="Cédula o ID" required>
+            <input type="text" id="direccion" placeholder="Dirección de habitación" required>
+
+            <div style="margin-bottom: 15px; text-align: left;">
+                <input type="email" id="emailInput" placeholder="Correo electrónico" required style="width: 100%; margin-bottom: 0;">
+                <div id="emailFeedback" class="feedback-mensaje"></div>
             </div>
-            <h1>BolsoApp</h1>
-            <div class="description">
-                La forma más segura y moderna de gestionar tus grupos de ahorro con amigos y familiares.
-            </div>
-            
-            <button class="btn-primary" onclick="showRegister()">Registrate</button>
-            
-            <div class="btn-row">
-                <button class="btn-secondary" onclick="showLogin()">Iniciar Sesión</button>
-                <button class="btn-secondary" onclick="showGuestMessage()">Invitado</button>
-            </div>
-            
-            <div class="legal-links">
-                <a href="#" onclick="showTermsModal()">Términos</a>
-                <a href="#" onclick="showPrivacyModal()">Privacidad</a>
-            </div>
-            <div class="version">Versión 1.0.0</div>
-        </div>
+
+            <input type="password" id="pass1" placeholder="Contraseña" required>
+            <input type="password" id="pass2" placeholder="Confirmar contraseña" required>
+
+            <button type="submit" id="btnCrearCuenta" class="btn-primary">Crear cuenta</button>
+            <button type="button" onclick="window.location.href='login.html'" class="btn-secondary">Volver</button>
+        </form>
     </div>
 
-    <div id="registerScreen" class="screen">
-        <div class="container">
-            <h1>Crea tu cuenta</h1>
-            <div class="subtitle">Paso 1 de 1</div>
-            
-            <div class="input-group"><input type="text" id="regName" placeholder="Nombre completo"></div>
-            <div class="input-group"><input type="email" id="regEmail" placeholder="Correo electrónico"></div>
-            <div class="input-group"><input type="tel" id="regPhone" placeholder="Teléfono"></div>
-            <div class="input-group"><input type="text" id="regCedula" placeholder="Cédula (V-12345678)"></div>
-            <div class="input-group"><input type="text" id="regAddress" placeholder="Dirección"></div>
-            
-            <div class="input-group">
-                <input type="password" id="regPassword" placeholder="Contraseña (8+ caracteres)">
-                <button class="toggle-password" onclick="togglePassword('regPassword', this)">👁️</button>
-            </div>
-            
-            <div class="input-group">
-                <input type="password" id="regConfirmPassword" placeholder="Confirmar contraseña">
-                <button class="toggle-password" onclick="togglePassword('regConfirmPassword', this)">👁️</button>
-            </div>
-            
-            <button class="btn-primary" id="registerBtn" style="margin-top: 10px;">Crear cuenta</button>
-            <button class="btn-secondary" onclick="showWelcome()" style="margin-top: 12px;">Volver</button>
-        </div>
-    </div>
+    <script type="module">
+        // Importamos la configuración y las librerías necesarias
+        import { auth, db } from './firebase-config.js';
+        import { 
+            createUserWithEmailAndPassword, 
+            fetchSignInMethodsForEmail 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    <div id="loginScreen" class="screen">
-        <div class="container">
-            <h1>Bienvenido</h1>
-            <div class="subtitle">Ingresa a tu cuenta</div>
-            
-            <div class="input-group">
-                <input type="email" id="loginEmail" placeholder="Correo electrónico">
-            </div>
-            
-            <div class="input-group">
-                <input type="password" id="loginPassword" placeholder="Contraseña">
-                <button class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</button>
-            </div>
-            
-            <button class="btn-primary" id="loginBtn">Ingresar</button>
-            <button class="btn-secondary" onclick="showWelcome()" style="margin-top: 12px;">Volver</button>
-        </div>
-    </div>
+        const emailInput = document.getElementById('emailInput');
+        const emailFeedback = document.getElementById('emailFeedback');
+        const btnCrearCuenta = document.getElementById('btnCrearCuenta');
+        const registroForm = document.getElementById('registroForm');
 
-    <script>
-        // --- UTILIDADES ---
-        function togglePassword(inputId, btn) {
-            const input = document.getElementById(inputId);
-            input.type = input.type === 'password' ? 'text' : 'password';
-            btn.textContent = input.type === 'password' ? '👁️' : '🙈';
-        }
-
-        function showToast(msg, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            if(type === 'error') toast.style.borderLeft = '4px solid #ef4444';
-            if(type === 'success') toast.style.borderLeft = '4px solid var(--secondary)';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        // --- NAVEGACIÓN ---
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-        const showWelcome = () => showScreen('welcomeScreen');
-        const showRegister = () => showScreen('registerScreen');
-        const showLogin = () => showScreen('loginScreen');
-
-        // --- LÓGICA DE REGISTRO (Firebase Simulado/Configurado) ---
-        async function registerWithFirebase() {
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
+        // --- 1. VALIDACIÓN DE CORREO EN TIEMPO REAL (ROJO/VERDE) ---
+        emailInput.addEventListener('input', async () => {
+            const email = emailInput.value.trim();
             
-            if(!email || password.length < 8) {
-                showToast('Datos incompletos o contraseña corta', 'error');
+            if (email.length < 5) {
+                emailFeedback.innerText = "";
+                emailInput.style.borderColor = "";
                 return;
             }
 
             try {
-                showToast('Procesando registro...', 'info');
-                // Aquí iría tu lógica de Firebase Import
-                const { auth, db } = await import('./firebase-config.js');
-                const { createUserWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js');
-                const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                // Consultamos si el correo existe en la base de datos de Auth
+                const methods = await fetchSignInMethodsForEmail(auth, email);
 
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(db, "usuarios", userCredential.user.uid), {
-                    email: email,
-                    registeredAt: new Date().toISOString()
-                });
-
-                showToast('¡Cuenta creada!', 'success');
-                setTimeout(() => window.location.href = 'pages/dashboard.html', 1500);
-            } catch (e) {
-                showToast('Error: ' + e.message, 'error');
+                if (methods.length > 0) {
+                    // SI EXISTE: Rojo
+                    emailFeedback.innerText = "❌ Este correo ya está registrado.";
+                    emailFeedback.style.color = "#ff4d4d";
+                    emailInput.style.borderColor = "#ff4d4d";
+                    btnCrearCuenta.disabled = true;
+                    btnCrearCuenta.style.opacity = "0.5";
+                } else {
+                    // NO EXISTE: Verde
+                    emailFeedback.innerText = "✅ Correo disponible para registro.";
+                    emailFeedback.style.color = "#2ecc71";
+                    emailInput.style.borderColor = "#2ecc71";
+                    btnCrearCuenta.disabled = false;
+                    btnCrearCuenta.style.opacity = "1";
+                }
+            } catch (error) {
+                // Error si el formato aún no es de correo (ej: "usuario@")
+                if (error.code === 'auth/invalid-email') {
+                    emailFeedback.innerText = "Escribiendo correo...";
+                    emailFeedback.style.color = "#f39c12";
+                }
             }
-        }
-
-        async function loginWithFirebase() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            try {
-                showToast('Validando...', 'info');
-                const { auth } = await import('./firebase-config.js');
-                const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js');
-                
-                await signInWithEmailAndPassword(auth, email, password);
-                showToast('Acceso correcto', 'success');
-                setTimeout(() => window.location.href = 'pages/dashboard.html', 1500);
-            } catch (e) {
-                showToast('Credenciales incorrectas', 'error');
-            }
-        }
-
-        // --- INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('registerBtn').onclick = registerWithFirebase;
-            document.getElementById('loginBtn').onclick = loginWithFirebase;
         });
 
-        function showGuestMessage() { showToast('Modo invitado limitado'); }
+        // --- 2. PROCESO DE REGISTRO AL HACER SUBMIT ---
+        registroForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value;
+            const pass1 = document.getElementById('pass1').value;
+            const pass2 = document.getElementById('pass2').value;
+
+            // Validación básica de contraseñas
+            if (pass1 !== pass2) {
+                alert("Las contraseñas no coinciden. Por favor, verifica.");
+                return;
+            }
+
+            if (pass1.length < 6) {
+                alert("La contraseña debe tener al menos 6 caracteres.");
+                return;
+            }
+
+            try {
+                // Paso A: Crear el usuario en Firebase Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass1);
+                const user = userCredential.user;
+
+                // Paso B: Guardar los datos extras en Firestore
+                await setDoc(doc(db, "usuarios", user.uid), {
+                    nombre: document.getElementById('nombre').value,
+                    apellido: document.getElementById('apellido').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    cedula: document.getElementById('cedula').value,
+                    direccion: document.getElementById('direccion').value,
+                    email: email,
+                    rol: "usuario",
+                    fechaRegistro: new Date().toISOString()
+                });
+
+                alert("¡Bienvenido a BolsoApp! Cuenta creada con éxito.");
+                window.location.href = "admin-panel.html";
+
+            } catch (error) {
+                console.error("Error detallado:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    alert("Este correo ya fue registrado.");
+                } else {
+                    alert("Error al registrar: " + error.message);
+                }
+            }
+        });
     </script>
 </body>
 </html>
