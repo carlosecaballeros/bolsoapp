@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Registro - BolsoApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFFFFF, #F5A623);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #F5A623;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 45px 14px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #F5A623;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Botón del ojito */
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #F5A623;
+        }
+
+        /* Fuerza de la contraseña */
+        .password-strength {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+
+        .strength-weak {
+            width: 33%;
+            background: #E94560;
+        }
+
+        .strength-medium {
+            width: 66%;
+            background: #F5A623;
+        }
+
+        .strength-strong {
+            width: 100%;
+            background: #4CAF50;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #F5A623, #E94560);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 40px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 30px;
+            width: 100%;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #F5A623;
+            color: #F5A623;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 1100;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1A1A2E;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 320px;
+            padding: 20px;
+            border: 1px solid #F5A623;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: #F5A623;
+            margin-bottom: 15px;
+        }
+
+        .close-modal {
+            background: #F5A623;
+            color: #1A1A2E;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro</h1>
+        <div class="subtitle">Crea tu cuenta en BolsoApp</div>
+
+        <div class="input-group">
+            <input type="text" id="regName" placeholder="Nombre completo">
+        </div>
+
+        <div class="input-group">
+            <input type="email" id="regEmail" placeholder="Correo electrónico">
+        </div>
+
+        <div class="input-group">
+            <input type="tel" id="regPhone" placeholder="Teléfono (0412-1234567)">
+        </div>
+
+        <!-- Campo de contraseña con ojito -->
+        <div class="input-group">
+            <input type="password" id="regPassword" placeholder="Contraseña (mínimo 8 caracteres)">
+            <button class="toggle-password" type="button" onclick="togglePassword('regPassword', this)">
+                👁️
+            </button>
+        </div>
+        <div class="password-strength" id="passwordStrength"></div>
+        <div class="strength-text" id="strengthText"></div>
+
+        <!-- Campo de confirmar contraseña con ojito -->
+        <div class="input-group">
+            <input type="password" id="regConfirmPassword" placeholder="Confirmar contraseña">
+            <button class="toggle-password" type="button" onclick="togglePassword('regConfirmPassword', this)">
+                👁️
+            </button>
+        </div>
+
+        <label>
+            <input type="checkbox" id="acceptTermsReg"> 
+            Acepto los <a href="#" onclick="showTermsModal(); return false;" style="color: #F5A623;">Términos y Condiciones</a>
+        </label>
+
+        <button class="btn-primary" onclick="completeRegistration()">REGISTRARSE</button>
+        <button class="btn-secondary" onclick="goBack()">Volver</button>
+    </div>
+
+    <!-- Modal de Términos -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <h3>📜 Términos y Condiciones</h3>
+            <p style="text-align: left; font-size: 12px; max-height: 300px; overflow-y: auto;">
+                <strong>1. Aceptación</strong><br>
+                Al usar BolsoApp, aceptas estos términos.<br><br>
+                <strong>2. Descripción del servicio</strong><br>
+                BolsoApp es una plataforma para grupos de ahorro colectivo. No somos una entidad financiera.<br><br>
+                <strong>3. Seguridad</strong><br>
+                Tus datos están protegidos con cifrado HTTPS y contraseñas seguras.<br><br>
+                <strong>4. Responsabilidad del usuario</strong><br>
+                Eres responsable de mantener tu contraseña segura.<br><br>
+                <strong>5. Contacto</strong><br>
+                soporte@bolsoapp.com
+            </p>
+            <button class="close-modal" onclick="closeTermsModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Función para mostrar/ocultar contraseña
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        // Verificar fuerza de la contraseña
+        function checkPasswordStrength() {
+            const password = document.getElementById('regPassword').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (password.length === 0) {
+                strengthDiv.className = 'password-strength';
+                strengthText.textContent = '';
+                return;
+            }
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            if (strength <= 2) {
+                strengthDiv.className = 'password-strength strength-weak';
+                strengthText.textContent = '🔴 Contraseña débil';
+                strengthText.style.color = '#E94560';
+            } else if (strength <= 4) {
+                strengthDiv.className = 'password-strength strength-medium';
+                strengthText.textContent = '🟡 Contraseña media';
+                strengthText.style.color = '#F5A623';
+            } else {
+                strengthDiv.className = 'password-strength strength-strong';
+                strengthText.textContent = '🟢 Contraseña fuerte';
+                strengthText.style.color = '#4CAF50';
+            }
+        }
+
+        // Mostrar/ocultar modales
+        function showTermsModal() {
+            document.getElementById('termsModal').classList.add('active');
+        }
+
+        function closeTermsModal() {
+            document.getElementById('termsModal').classList.remove('active');
+        }
+
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            if (type === 'success') toast.style.background = 'rgba(76, 175, 80, 0.9)';
+            if (type === 'error') toast.style.background = 'rgba(233, 69, 96, 0.9)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Validar teléfono venezolano
+        function isValidVenezuelanPhone(phone) {
+            const regex = /^(0412|0414|0416|0424|0426)\d{7}$/;
+            return regex.test(phone);
+        }
+
+        // Completar registro
+        function completeRegistration() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            const accept = document.getElementById('acceptTermsReg').checked;
+
+            if (!name || !email || !phone || !password || !confirm) {
+                showToast('⚠️ Completa todos los campos', 'error');
+                return;
+            }
+
+            if (!accept) {
+                showToast('⚠️ Debes aceptar los Términos y Condiciones', 'error');
+                return;
+            }
+
+            if (!isValidVenezuelanPhone(phone)) {
+                showToast('⚠️ Ingresa un teléfono venezolano válido (0412-XXXXXXX)', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showToast('⚠️ La contraseña debe tener al menos 8 caracteres', 'error');
+                return;
+            }
+
+            if (password !== confirm) {
+                showToast('⚠️ Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            // Guardar usuario
+            const userData = {
+                name: name,
+                email: email,
+                phone: phone,
+                registeredAt: new Date().toISOString(),
+                biometricVerified: false
+            };
+            localStorage.setItem('bolsoapp_user', JSON.stringify(userData));
+            
+            showToast('✅ ¡Registro exitoso! Redirigiendo...', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
+
+        // Evento para verificar fuerza de la contraseña en tiempo real
+        document.getElementById('regPassword').addEventListener('input', checkPasswordStrength);
+    </script>
+</body>
+</html>

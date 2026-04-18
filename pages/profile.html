@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Perfil - BolsoApp</title>
+    <style>
+        :root { --primary: #2D5AFE; --secondary: #00D084; --danger: #EF4444; --bg: #F8FAFC; --card: #FFFFFF; --text-main: #1E293B; --text-muted: #64748B; --border: #E2E8F0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 110px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+
+        /* Tarjeta Perfil */
+        .profile-card { background: var(--card); border-radius: 28px; padding: 30px; text-align: center; border: 1px solid var(--border); margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .avatar-large { width: 110px; height: 110px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; margin: 0 auto 15px; border: 4px solid white; box-shadow: 0 8px 16px rgba(45,90,254,0.2); overflow: hidden; position: relative; }
+        .avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+        .user-full-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+        .user-email { color: var(--text-muted); font-size: 14px; }
+
+        /* Menú */
+        .menu-card { background: var(--card); border-radius: 24px; overflow: hidden; border: 1px solid var(--border); }
+        .menu-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-text { font-size: 15px; font-weight: 600; }
+
+        /* Barra Inferior */
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid var(--border); z-index: 1000; }
+        .tab-item { position: relative; text-align: center; text-decoration: none; color: var(--text-muted); font-size: 10px; font-weight: 600; width: 20%; z-index: 2; }
+        .tab-item.active { color: var(--primary); }
+        .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+        .tab-indicator { position: absolute; top: 8px; left: 0; height: 48px; width: 20%; background: rgba(45, 90, 254, 0.1); border-radius: 14px; z-index: 1; transition: 0.3s; }
+        .pos-4 { transform: translateX(400%); }
+
+        /* Modales */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 24px; width: 100%; max-width: 400px; text-align: center; }
+        .btn-modal { background: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-card">
+            <div class="avatar-large" id="profAvatar"><span id="profInitial">U</span></div>
+            <div class="user-full-name" id="profFullName">Cargando...</div>
+            <div class="user-email" id="profEmail">...</div>
+        </div>
+
+        <div class="menu-card">
+            <div class="menu-item" onclick="openModal('passModal')"><span class="menu-text">🔒 Cambiar Contraseña</span><span>❯</span></div>
+            <div class="menu-item" onclick="openModal('helpModal')"><span class="menu-text">❓ Ayuda y Soporte</span><span>❯</span></div>
+            <div class="menu-item" onclick="openModal('termsModal')"><span class="menu-text">📄 Términos y Condiciones</span><span>❯</span></div>
+            <div class="menu-item" onclick="logout()" style="color: var(--danger);"><span class="menu-text">🚪 Cerrar Sesión</span></div>
+        </div>
+    </div>
+
+    <div id="passModal" class="modal"><div class="modal-content"><h3>Seguridad</h3><p>Enviaremos un correo para cambiar tu clave.</p><button class="btn-modal" onclick="handlePasswordReset()">Enviar</button><p onclick="closeModal('passModal')" style="margin-top:15px; cursor:pointer;">Cancelar</p></div></div>
+    <div id="helpModal" class="modal"><div class="modal-content"><h3>Soporte</h3><p>soporte@bolsoapp.com</p><button class="btn-modal" onclick="closeModal('helpModal')">Ok</button></div></div>
+    <div id="termsModal" class="modal"><div class="modal-content"><h3>Términos</h3><p>Uso legal de la App.</p><button class="btn-modal" onclick="closeModal('termsModal')">Ok</button></div></div>
+
+    <nav class="tab-bar">
+        <div class="tab-indicator pos-4"></div>
+        <a href="dashboard.html" class="tab-item"><span class="tab-icon">🏠</span>Inicio</a>
+        <a href="groups.html" class="tab-item"><span class="tab-icon">➕</span>Unirse</a>
+        <a href="payments.html" class="tab-item"><span class="tab-icon">💳</span>Pagos</a>
+        <a href="my-group.html" class="tab-item"><span class="tab-icon">👥</span>Grupo</a>
+        <a href="profile.html" class="tab-item active"><span class="tab-icon">⚙️</span>Perfil</a>
+    </nav>
+
+    <script type="module">
+        import { db, auth } from '../firebase-config.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const localData = JSON.parse(localStorage.getItem('bolsoapp_user'));
+            if (!localData) { window.location.href = '../index.html'; return; }
+            document.getElementById('profEmail').textContent = localData.email;
+            try {
+                const userSnap = await getDoc(doc(db, "usuarios", localData.firebaseUID));
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    document.getElementById('profFullName').textContent = `${data.name} ${data.lastName}`;
+                    document.getElementById('profInitial').textContent = data.name.charAt(0).toUpperCase();
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        window.openModal = (id) => document.getElementById(id).classList.add('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.logout = () => { localStorage.removeItem('bolsoapp_user'); window.location.href = '../index.html'; };
+        window.handlePasswordReset = async () => {
+            const email = JSON.parse(localStorage.getItem('bolsoapp_user')).email;
+            try { await sendPasswordResetEmail(auth, email); alert("Correo enviado"); closeModal('passModal'); } 
+            catch(e) { alert("Error al enviar"); }
+        };
+    </script>
+</body>
+</html>

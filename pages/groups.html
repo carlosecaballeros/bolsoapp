@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Explorar Bolsos - BolsoApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D5AFE;
+            --secondary: #00D084;
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --accent: #F59E0B;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 110px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+
+        /* --- CABECERA --- */
+        .header { margin-bottom: 25px; }
+        .header h1 { font-size: 24px; font-weight: 800; color: var(--text-main); }
+        .header p { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+
+        /* --- BANNER DE PROTECCIÓN --- */
+        .protection-banner {
+            background: linear-gradient(135deg, #1E293B, #334155);
+            color: white;
+            padding: 15px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .protection-icon { font-size: 24px; }
+        .protection-text b { color: var(--secondary); display: block; font-size: 14px; }
+        .protection-text p { font-size: 11px; opacity: 0.8; }
+
+        /* --- FILTROS --- */
+        .filter-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+            scrollbar-width: none;
+        }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 12px;
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text-muted);
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(45, 90, 254, 0.2);
+        }
+
+        /* --- LISTA DE TARJETAS --- */
+        .group-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+        .group-card:active { transform: scale(0.98); }
+
+        .group-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .pote-tag { background: #EEF2FF; color: var(--primary); font-weight: 800; padding: 6px 14px; border-radius: 12px; font-size: 18px; }
+        
+        .group-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .group-info p { font-size: 12px; color: var(--text-muted); }
+
+        /* Barra de progreso */
+        .progress-container { margin: 15px 0; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+        .progress-bar { height: 10px; background: #F1F5F9; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--secondary); border-radius: 10px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .group-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); }
+        .cuota-info { font-size: 14px; font-weight: 700; }
+        .cuota-info span { color: var(--text-muted); font-weight: 400; font-size: 11px; }
+        .protection-note { font-size: 10px; color: var(--accent); margin-top: 2px; font-weight: 600; }
+        
+        .btn-join {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-join:disabled { background: #CBD5E1; cursor: not-allowed; }
+
+        /* --- TAB BAR --- */
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid var(--border); z-index: 1000; }
+        .tab-item { position: relative; text-align: center; text-decoration: none; color: var(--text-muted); font-size: 10px; font-weight: 600; width: 20%; z-index: 2; }
+        .tab-item.active { color: var(--primary); }
+        .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+        .tab-indicator { position: absolute; top: 8px; left: 0; height: 48px; width: 20%; background: rgba(45, 90, 254, 0.1); border-radius: 14px; z-index: 1; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .pos-1 { transform: translateX(100%); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Explorar Bolsos</h1>
+            <p>Únete a un grupo verificado y ahorra seguro.</p>
+        </div>
+
+        <div class="protection-banner">
+            <div class="protection-icon">🛡️</div>
+            <div class="protection-text">
+                <b>Respaldo Garantizado</b>
+                <p>Tu ahorro está protegido por nuestro fondo de garantía.</p>
+            </div>
+        </div>
+
+        <div class="filter-scroll">
+            <button class="filter-btn active">Todos</button>
+            <button class="filter-btn">$100</button>
+            <button class="filter-btn">$200</button>
+            <button class="filter-btn">$500</button>
+            <button class="filter-btn">$1000</button>
+        </div>
+
+        <div id="groupsList"></div>
+    </div>
+
+    <nav class="tab-bar">
+        <div class="tab-indicator pos-1"></div>
+        <a href="dashboard.html" class="tab-item"><span class="tab-icon">🏠</span>Inicio</a>
+        <a href="groups.html" class="tab-item active"><span class="tab-icon">➕</span>Unirse</a>
+        <a href="payments.html" class="tab-item"><span class="tab-icon">💳</span>Pagos</a>
+        <a href="my-group.html" class="tab-item"><span class="tab-icon">👥</span>Grupo</a>
+        <a href="profile.html" class="tab-item"><span class="tab-icon">⚙️</span>Perfil</a>
+    </nav>
+
+    <script>
+        // Datos de ejemplo simulando la base de datos
+        const bolsos = [
+            { id: 1, nombre: "Bolso Express ⚡", monto: 100, inscritos: 9, cupos: 10, cuota: 10, frecuencia: "Semanal" },
+            { id: 2, nombre: "Bolso Diamante 💎", monto: 200, inscritos: 8, cupos: 10, cuota: 20, frecuencia: "Semanal" },
+            { id: 3, nombre: "Bolso Vecinos 🏘️", monto: 100, inscritos: 4, cupos: 10, cuota: 10, frecuencia: "Semanal" },
+            { id: 4, nombre: "Bolso Emprendedor 🚀", monto: 500, inscritos: 3, cupos: 10, cuota: 50, frecuencia: "Quincenal" },
+            { id: 5, nombre: "Bolso Elite 👑", monto: 1000, inscritos: 1, cupos: 10, cuota: 100, frecuencia: "Mensual" },
+            { id: 6, nombre: "Ahorro Plus 📈", monto: 500, inscritos: 7, cupos: 10, cuota: 50, frecuencia: "Quincenal" }
+        ];
+
+        function renderBolsos(filtro = "Todos") {
+            const container = document.getElementById('groupsList');
+            container.innerHTML = '';
+
+            // Filtrar
+            let filtrados = filtro === "Todos" 
+                ? bolsos 
+                : bolsos.filter(b => `$${b.monto}` === filtro);
+
+            // Ordenar por urgencia (los que tienen más porcentaje de llenado primero)
+            filtrados.sort((a, b) => (b.inscritos / b.cupos) - (a.inscritos / a.cupos));
+
+            filtrados.forEach(b => {
+                const pct = (b.inscritos / b.cupos) * 100;
+                const estaLleno = b.inscritos >= b.cupos;
+
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                card.innerHTML = `
+                    <div class="group-header">
+                        <div class="group-info">
+                            <h3>${b.nombre}</h3>
+                            <p>Sorteo ${b.frecuencia} • Tasa Euro BCV</p>
+                        </div>
+                        <div class="pote-tag">$${b.monto}</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>${estaLleno ? '¡Cerrando grupo!' : 'Faltan ' + (b.cupos - b.inscritos) + ' personas'}</span>
+                            <span>${b.inscritos}/${b.cupos}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                    <div class="group-footer">
+                        <div class="cuota-info">
+                            $${b.cuota} <span>/ ${b.frecuencia.toLowerCase()}</span>
+                            <p class="protection-note">+ $1 Protección (Solo 1ra semana)</p>
+                        </div>
+                        <button class="btn-join" ${estaLleno ? 'disabled' : ''} onclick="unirse(${b.id})">
+                            ${estaLleno ? 'Lleno' : 'Unirme'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Lógica de botones de filtro
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderBolsos(this.textContent);
+            });
+        });
+
+        function unirse(id) {
+            localStorage.setItem('bolso_id_seleccionado', id);
+            window.location.href = 'join-details.html';
+        }
+
+        // Render inicial
+        renderBolsos();
+    </script>
+</body>
+</html>
