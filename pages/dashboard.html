@@ -2,93 +2,55 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Inicio - BolsoApp</title>
-    <style>
-        :root { --primary: #2D5AFE; --bg: #F8FAFC; --card: #FFFFFF; --text-main: #1E293B; --text-muted: #64748B; --border: #E2E8F0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text-main); padding-bottom: 110px; }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        
-        .balance-card { background: var(--primary); color: white; padding: 25px; border-radius: 24px; margin-bottom: 20px; }
-        .balance-label { font-size: 14px; opacity: 0.8; }
-        .balance-amount { font-size: 32px; font-weight: 800; margin: 5px 0; }
-
-        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid var(--border); z-index: 1000; }
-        .tab-item { position: relative; text-align: center; text-decoration: none; color: var(--text-muted); font-size: 10px; font-weight: 600; width: 20%; z-index: 2; }
-        .tab-item.active { color: var(--primary); }
-        .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
-        .tab-indicator { position: absolute; top: 8px; left: 0; height: 48px; width: 20%; background: rgba(45, 90, 254, 0.1); border-radius: 14px; z-index: 1; transition: 0.3s; }
-        .pos-0 { transform: translateX(0%); }
-    </style>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BolsoApp - Dashboard</title>
+    <link rel="stylesheet" href="../stiles.css"> </head>
 <body>
     <div class="container">
-        <header style="margin-bottom: 25px;">
-            <h1>Hola, <span id="userName">Cargando...</span> 👋</h1>
-            <p style="color: var(--text-muted);">Este es el estado de tu ahorro.</p>
-        </header>
-
-        <div class="balance-card">
-            <p class="balance-label">Total en mis Bolsos</p>
-            <p class="balance-amount" id="totalAhorro">$0.00</p>
-            <p style="font-size: 12px;" id="statusAccount">Verificando cuenta...</p>
-        </div>
-
-        <h3>Actividad reciente</h3>
-        <div style="background: white; padding: 15px; border-radius: 18px; margin-top: 10px; border: 1px solid var(--border);">
-            <p id="activityLog" style="font-size: 14px;">Buscando actualizaciones...</p>
-        </div>
+        <h1>Hola, <span id="userName">Cargando...</span> 👋</h1>
+        <div id="statusAccount">Verificando sesión...</div>
     </div>
 
-    <nav class="tab-bar">
-        <div class="tab-indicator pos-0"></div>
-        <a href="dashboard.html" class="tab-item active"><span class="tab-icon">🏠</span>Inicio</a>
-        <a href="groups.html" class="tab-item"><span class="tab-icon">➕</span>Unirse</a>
-        <a href="payments.html" class="tab-item"><span class="tab-icon">💳</span>Pagos</a>
-        <a href="my-group.html" class="tab-item"><span class="tab-icon">👥</span>Grupo</a>
-        <a href="profile.html" class="tab-item"><span class="tab-icon">⚙️</span>Perfil</a>
-    </nav>
-
     <script type="module">
-        // Importación corregida: salimos de la carpeta /pages para buscar la config
-        import { auth, db } from '../firebase-config.js';
+        // Importación directa desde la misma carpeta
+        import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Observador de la sesión
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 console.log("✅ Usuario detectado:", user.email);
-                
+                document.getElementById('statusAccount').innerText = "Sesión activa";
+
+                // Intento de cargar datos de Firestore
                 try {
-                    // Verificación de seguridad para la base de datos
-                    if (!db) throw new Error("Firestore (db) no está inicializado.");
+                    if (db) {
+                        const userRef = doc(db, "usuarios", user.uid);
+                        const docSnap = await getDoc(userRef);
 
-                    const userDocRef = doc(db, "usuarios", user.uid);
-                    const docSnap = await getDoc(userDocRef);
-
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        document.getElementById('userName').innerText = userData.nombre || "Usuario";
-                        document.getElementById('statusAccount').innerText = "Estado: Cuenta Activa";
-                        document.getElementById('activityLog').innerText = "No hay actividad reciente.";
+                        if (docSnap.exists()) {
+                            document.getElementById('userName').innerText = docSnap.data().nombre;
+                        } else {
+                            // Si no hay documento, usamos el nombre del correo
+                            document.getElementById('userName').innerText = user.email.split('@')[0];
+                        }
                     } else {
-                        document.getElementById('userName').innerText = "Usuario";
-                        document.getElementById('activityLog').innerText = "Completa tu perfil para ver actividad.";
+                        throw new Error("Variable 'db' no definida");
                     }
-
                 } catch (error) {
-                    console.error("❌ Error Firestore:", error);
-                    // Si falla Firestore, al menos mostramos el correo del usuario
+                    console.error("Error al obtener datos:", error);
+                    // Fallback amigable: mostrar el nombre desde el correo
                     document.getElementById('userName').innerText = user.email.split('@')[0];
                 }
+
             } else {
-                console.log("⚠️ Sin sesión. Redirigiendo...");
-                // Damos un margen de 2 segundos antes de echar al usuario por si el internet está lento
+                console.log("❌ Sin sesión. Redirigiendo...");
+                // Esperamos un poco antes de redirigir para evitar errores de carga lenta
                 setTimeout(() => {
-                    if (!auth.currentUser) window.location.href = "../index.html";
-                }, 2000);
+                    if (!auth.currentUser) {
+                        window.location.href = "../index.html";
+                    }
+                }, 3000);
             }
         });
     </script>
