@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BolsoApp - Iniciar Sesión</title>
+    <link rel="stylesheet" href="stiles.css">
+</head>
+<body>
+
+    <div class="registro-container">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="assets/BolsoApp.png" alt="Logo" style="width: 100px;">
+            <h2>Iniciar Sesión</h2>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Correo electrónico" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Contraseña" required>
+            </div>
+
+            <button type="submit" id="btnLogin" class="btn-primary">Entrar</button>
+            <button type="button" onclick="window.location.href='index.html'" class="btn-secondary">Volver</button>
+        </form>
+        
+        <p style="margin-top: 20px; font-size: 14px; text-align: center;">
+            ¿No tienes cuenta? <a href="register.html" style="color: var(--primary); font-weight: bold;">Regístrate aquí</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { 
+            signInWithEmailAndPassword, 
+            setPersistence, 
+            browserLocalPersistence 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const loginForm = document.getElementById('loginForm');
+        const btnLogin = document.getElementById('btnLogin');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Bloqueamos el botón para evitar múltiples clics
+            btnLogin.disabled = true;
+            btnLogin.innerText = "Cargando...";
+
+            try {
+                // 1. Forzamos a Firebase a recordar la sesión en este navegador
+                await setPersistence(auth, browserLocalPersistence);
+                
+                // 2. Intentamos iniciar sesión
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                console.log("Sesión iniciada con éxito");
+                window.location.href = "dashboard.html";
+
+            } catch (error) {
+                console.error("Error en login:", error.code);
+                btnLogin.disabled = false;
+                btnLogin.innerText = "Entrar";
+
+                // Mensajes de error amigables
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    alert("Correo o contraseña incorrectos.");
+                } else if (error.code === 'auth/invalid-email') {
+                    alert("El formato del correo no es válido.");
+                } else {
+                    alert("Error al intentar entrar: " + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
