@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Verificación Pro - BolsoApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2D5AFE; --success: #00D084; --bg: #F8FAFC; --text-main: #1E293B; --border: #E2E8F0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .verify-card { background: #fff; padding: 25px 15px; border-radius: 32px; border: 1px solid var(--border); text-align: center; }
+        h2 { font-size: 20px; font-weight: 800; margin-bottom: 20px; }
+        .step { background: #F1F5F9; padding: 15px; border-radius: 20px; margin-bottom: 15px; text-align: left; border: 1px solid var(--border); }
+        .step-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; }
+        .upload-btn { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 10px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; display: block; margin-top: 10px; }
+        
+        /* INTERFAZ LIVENESS */
+        #selfieContainer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+        .liveness-header { position: absolute; top: 40px; background: rgba(255, 255, 255, 0.9); padding: 15px 25px; border-radius: 50px; width: 85%; text-align: center; }
+        #instructionText { color: var(--text-main); font-weight: 800; font-size: 16px; text-transform: uppercase; }
+        .camera-overlay { width: 280px; height: 280px; border: 6px solid white; border-radius: 50%; position: relative; overflow: hidden; box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.7); }
+        .camera-overlay.active { border-color: var(--success); }
+        #cameraFeed { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .btn-capture { position: absolute; bottom: 50px; background: var(--primary); color: white; border: none; padding: 18px 40px; border-radius: 50px; font-weight: 800; font-size: 16px; }
+        input[type="file"] { display: none; }
+        .preview-img { width: 100%; height: 80px; border-radius: 10px; object-fit: cover; display: none; margin-top: 10px; border: 2px solid var(--success); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="verify-card">
+            <h2>Verificación de Identidad</h2>
+            <div class="step">
+                <p class="step-title">1. Cédula Frontal</p>
+                <div class="upload-btn" onclick="document.getElementById('fileFront').click()">📸 Capturar</div>
+                <img id="prevFront" class="preview-img">
+                <input type="file" id="fileFront" accept="image/*" capture="environment">
+            </div>
+            <div class="step">
+                <p class="step-title">2. Cédula Reverso</p>
+                <div class="upload-btn" onclick="document.getElementById('fileBack').click()">📸 Capturar</div>
+                <img id="prevBack" class="preview-img">
+                <input type="file" id="fileBack" accept="image/*" capture="environment">
+            </div>
+            <div class="step">
+                <p class="step-title">3. Prueba de Vida (Bio-Selfie)</p>
+                <div class="upload-btn" style="border-color: var(--success); color: var(--success);" onclick="abrirCamaraSelfie()">🤳 Iniciar Guía Facial</div>
+                <img id="prevSelfie" class="preview-img">
+            </div>
+            <button id="btnFinalizar" class="upload-btn" style="background: var(--primary); color: white; width: 100%; padding: 18px; border: none;" disabled onclick="enviarAlAdmin()">Enviar para Revisión</button>
+        </div>
+    </div>
+
+    <div id="selfieContainer">
+        <div class="liveness-header"><p id="instructionText">Centra tu rostro en el círculo</p></div>
+        <div class="camera-overlay" id="overlay"><video id="cameraFeed" autoplay playsinline muted></video></div>
+        <button class="btn-capture" id="captureAction" onclick="procesarPasos()">COMENZAR</button>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let stream = null;
+        const instructions = ["Centra tu rostro", "Gira a la derecha 👉", "Gira a la izquierda 👈", "Sonríe 😁", "¡Listo!"];
+
+        async function abrirCamaraSelfie() {
+            const container = document.getElementById('selfieContainer');
+            const video = document.getElementById('cameraFeed');
+            container.style.display = 'flex';
+
+            const constraints = {
+                video: { 
+                    facingMode: "user",
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            };
+
+            try {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                // Forzar el play en dispositivos móviles
+                video.onloadedmetadata = () => video.play();
+            } catch (err) {
+                console.error("Error detallado:", err);
+                alert("No se pudo acceder a la cámara. Asegúrate de:\n1. Usar HTTPS (SSL).\n2. Dar permisos de cámara en el navegador.\n3. No tener otra app usando la cámara.");
+                container.style.display = 'none';
+            }
+        }
+
+        function procesarPasos() {
+            const text = document.getElementById('instructionText');
+            const overlay = document.getElementById('overlay');
+            const btn = document.getElementById('captureAction');
+
+            if (currentStep < instructions.length) {
+                text.innerText = instructions[currentStep];
+                overlay.classList.add('active');
+                currentStep++;
+                if (currentStep === instructions.length) {
+                    btn.innerText = "FINALIZAR";
+                    btn.style.background = "#00D084";
+                }
+            } else {
+                cerrarYGuardar();
+            }
+        }
+
+        function cerrarYGuardar() {
+            if (stream) stream.getTracks().forEach(track => track.stop());
+            document.getElementById('selfieContainer').style.display = 'none';
+            const prev = document.getElementById('prevSelfie');
+            prev.src = "https://via.placeholder.com/150?text=Selfie+Verificada";
+            prev.style.display = 'block';
+            document.getElementById('btnFinalizar').disabled = false;
+        }
+
+        function handleFile(idInput, idPrev) {
+            document.getElementById(idInput).addEventListener('change', function(e) {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (f) => {
+                        document.getElementById(idPrev).src = f.target.result;
+                        document.getElementById(idPrev).style.display = 'block';
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        handleFile('fileFront', 'prevFront');
+        handleFile('fileBack', 'prevBack');
+        function enviarAlAdmin() { alert("Datos enviados."); window.location.href = 'dashboard.html'; }
+    </script>
+</body>
+</html>
