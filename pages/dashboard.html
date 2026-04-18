@@ -10,12 +10,10 @@
         body { background-color: var(--bg); color: var(--text-main); padding-bottom: 110px; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         
-        /* Estilos de tus tarjetas de saldo */
         .balance-card { background: var(--primary); color: white; padding: 25px; border-radius: 24px; margin-bottom: 20px; }
         .balance-label { font-size: 14px; opacity: 0.8; }
         .balance-amount { font-size: 32px; font-weight: 800; margin: 5px 0; }
 
-        /* Barra Inferior */
         .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid var(--border); z-index: 1000; }
         .tab-item { position: relative; text-align: center; text-decoration: none; color: var(--text-muted); font-size: 10px; font-weight: 600; width: 20%; z-index: 2; }
         .tab-item.active { color: var(--primary); }
@@ -27,21 +25,19 @@
 <body>
     <div class="container">
         <header style="margin-bottom: 25px;">
-            <h1>Hola, <span id="userName">Bienvenido</span> 👋</h1>
+            <h1>Hola, <span id="userName">Cargando...</span> 👋</h1>
             <p style="color: var(--text-muted);">Este es el estado de tu ahorro.</p>
         </header>
 
         <div class="balance-card">
             <p class="balance-label">Total en mis Bolsos</p>
-            <p class="balance-amount">$1,250.00</p>
-            <p style="font-size: 12px;">Proximo cobro: 15 de Oct</p>
+            <p class="balance-amount" id="totalAhorro">$0.00</p>
+            <p style="font-size: 12px;">Próximo cobro: Pendiente</p>
         </div>
 
         <h3>Actividad reciente</h3>
         <div style="background: white; padding: 15px; border-radius: 18px; margin-top: 10px; border: 1px solid var(--border);">
-            <p style="font-size: 14px;">✅ Pago realizado - Bolso Familiar</p>
-            <hr style="margin: 10px 0; border: 0; border-top: 1px solid var(--border);">
-            <p style="font-size: 14px;">🔔 Nuevo sorteo en Bolso Amigos</p>
+            <p id="mensajeActividad" style="font-size: 14px;">No hay actividad reciente.</p>
         </div>
     </div>
 
@@ -53,5 +49,36 @@
         <a href="my-group.html" class="tab-item"><span class="tab-icon">👥</span>Grupo</a>
         <a href="profile.html" class="tab-item"><span class="tab-icon">⚙️</span>Perfil</a>
     </nav>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Observador de la sesión
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // El usuario está logueado, buscamos su nombre en Firestore
+                try {
+                    const docRef = doc(db, "usuarios", user.uid);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        document.getElementById('userName').innerText = docSnap.data().nombre;
+                    } else {
+                        document.getElementById('userName').innerText = "Usuario";
+                    }
+                } catch (error) {
+                    console.error("Error obteniendo datos:", error);
+                }
+            } else {
+                // SI NO HAY USUARIO, REDIRIGE AL LOGIN DESPUÉS DE 2 SEGUNDOS
+                console.log("No hay sesión activa, redirigiendo...");
+                setTimeout(() => {
+                    window.location.href = "index.html"; 
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
