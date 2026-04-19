@@ -3,49 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Bolso - BolsoApp</title>
+    <title>Panel BolsoApp</title>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #f8fafc; display: none; }
-        .header { background: #2D5AFE; color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 30px 30px; }
-        .content { padding: 20px; max-width: 500px; margin: auto; }
-        .card-ahorro { background: white; padding: 25px; border-radius: 20px; margin-top: -30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center; }
-        button.logout { margin-top: 50px; background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        :root { --blue: #2D5AFE; --bg: #f4f7f6; --text: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: none; }
+        .header { background: var(--blue); color: white; padding: 30px 20px; border-radius: 0 0 25px 25px; text-align: center; }
+        .card { background: white; margin: -20px 15px 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .balance { font-size: 28px; font-weight: bold; color: var(--blue); margin: 10px 0; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .logout-btn { background: #ff4757; color: white; border: none; padding: 12px; width: 80%; border-radius: 10px; margin: 20px auto; display: block; cursor: pointer; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <h1>Hola, <span id="userName">...</span></h1>
+        <h1>Hola, <span id="userName">Cargando...</span></h1>
+        <p id="userCedula" style="opacity: 0.8; font-size: 14px;"></p>
     </div>
-    <div class="content">
-        <div class="card-ahorro">
-            <p style="color: #64748b;">Saldo Total</p>
-            <h2 style="font-size: 32px; color: #1e293b;">$0.00</h2>
-        </div>
-        <center><button class="logout" onclick="cerrarSesion()">Cerrar Sesión</button></center>
+
+    <div class="card">
+        <p style="color: #64748b; font-size: 14px; margin: 0;">Saldo Actual</p>
+        <div class="balance" id="userBalance">$0.00</div>
     </div>
+
+    <div class="card">
+        <h3>Mis Datos</h3>
+        <div class="info-row"><span>Teléfono:</span> <b id="userPhone">...</b></div>
+        <div class="info-row"><span>Dirección:</span> <b id="userAddress">...</b></div>
+    </div>
+
+    <button class="logout-btn" onclick="salir()">Cerrar Sesión</button>
 
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { doc, getDoc, collection, query, where, getDocs, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.body.style.display = "block";
+                
                 try {
-                    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
-                    if (docSnap.exists()) {
-                        document.getElementById('userName').innerText = docSnap.data().nombre;
+                    // 1. Cargar datos del perfil (usando tus campos reales: name, cedula, etc)
+                    const userRef = doc(db, "usuarios", user.uid);
+                    const userSnap = await getDoc(userRef);
+
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        document.getElementById('userName').innerText = data.name || "Usuario";
+                        document.getElementById('userCedula').innerText = "C.I: " + (data.cedula || "N/A");
+                        document.getElementById('userPhone').innerText = data.phone || "No registrado";
+                        document.getElementById('userAddress').innerText = data.address || "No registrada";
                     }
-                } catch (e) {
-                    console.error("Error cargando nombre");
+
+                    // 2. Cargar último movimiento para ver el saldo (colección movimientos)
+                    const movRef = collection(db, "movimientos");
+                    const q = query(movRef, where("usuarioId", "==", user.uid), orderBy("saldoPosterior", "desc"), limit(1));
+                    const querySnapshot = await getDocs(q);
+                    
+                    querySnapshot.forEach((doc) => {
+                        document.getElementById('userBalance').innerText = "$" + doc.data().saldoPosterior.toLocaleString();
+                    });
+
+                } catch (error) {
+                    console.error("Error cargando datos:", error);
                 }
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        window.cerrarSesion = () => {
+        window.salir = () => {
             signOut(auth).then(() => window.location.href = "login.html");
         };
     </script>
