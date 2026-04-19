@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - BolsoApp</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f7f6; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #2D5AFE; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="BolsoApp.png" alt="Logo" style="width: 80px;">
+        <h2>Crear Cuenta</h2>
+        <form id="regForm">
+            <input type="text" id="regName" placeholder="Nombre completo" required>
+            <input type="email" id="regEmail" placeholder="Correo electrónico" required>
+            <input type="password" id="regPass" placeholder="Contraseña (mín. 6 caracteres)" required>
+            <button type="submit">Registrarme</button>
+        </form>
+        <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        document.getElementById('regForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+                
+                // Guardar nombre en Firestore
+                await setDoc(doc(db, "usuarios", user.uid), {
+                    nombre: nombre,
+                    email: email,
+                    fechaCreado: new Date()
+                });
+
+                alert("¡Cuenta creada!");
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
