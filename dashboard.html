@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Bolso - BolsoApp</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f8fafc; display: none; }
+        .header { background: #2D5AFE; color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 30px 30px; }
+        .content { padding: 20px; max-width: 500px; margin: auto; }
+        .card-ahorro { background: white; padding: 25px; border-radius: 20px; margin-top: -30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center; }
+        button.logout { margin-top: 50px; background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Hola, <span id="userName">...</span></h1>
+    </div>
+    <div class="content">
+        <div class="card-ahorro">
+            <p style="color: #64748b;">Saldo Total</p>
+            <h2 style="font-size: 32px; color: #1e293b;">$0.00</h2>
+        </div>
+        <center><button class="logout" onclick="cerrarSesion()">Cerrar Sesión</button></center>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.body.style.display = "block";
+                try {
+                    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+                    if (docSnap.exists()) {
+                        document.getElementById('userName').innerText = docSnap.data().nombre;
+                    }
+                } catch (e) {
+                    console.error("Error cargando nombre");
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        window.cerrarSesion = () => {
+            signOut(auth).then(() => window.location.href = "login.html");
+        };
+    </script>
+</body>
+</html>
