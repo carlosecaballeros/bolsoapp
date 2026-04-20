@@ -3,40 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Entrar - BolsoApp</title>
+    <title>BolsoApp - Entrar</title>
     <style>
-        :root { --blue: #2D5AFE; --bg: #F0F2F5; --text: #1C1E21; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .card { background: white; padding: 30px; border-radius: 28px; width: 90%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
-        img { width: 100px; margin-bottom: 20px; }
-        input { width: 100%; padding: 16px; margin: 8px 0; border: 1px solid #E4E6EB; border-radius: 14px; font-size: 16px; background: #F7F8FA; }
-        button { width: 100%; padding: 16px; background: var(--blue); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-top: 15px; cursor: pointer; }
-        a { color: var(--blue); text-decoration: none; font-size: 14px; display: block; margin-top: 15px; }
+        :root { --blue: #2D5AFE; --bg: #F0F2F5; --text: #1C1E21; --white: #ffffff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card { 
+            background: var(--white); 
+            padding: 40px 30px; 
+            border-radius: 28px; 
+            width: 100%; 
+            max-width: 400px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            text-align: center; 
+        }
+        .logo { width: 80px; margin-bottom: 20px; }
+        h2 { margin: 0 0 10px; color: var(--text); }
+        p { color: #8E8E93; font-size: 14px; margin-bottom: 30px; }
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            border: 1px solid #E4E6EB; 
+            border-radius: 16px; 
+            font-size: 16px; 
+            background: #F7F8FA; 
+        }
+        .btn-primary { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--blue); 
+            color: white; 
+            border: none; 
+            border-radius: 16px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+        }
+        .link { color: var(--blue); text-decoration: none; font-size: 14px; display: block; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="card">
-        <img src="BolsoApp.png" alt="Logo">
-        <h2 style="margin-bottom: 20px;">BolsoApp</h2>
+        <img src="BolsoApp.png" alt="Logo" class="logo">
+        <h2>Bienvenido</h2>
+        <p>Inicia sesión para gestionar tus bolsos</p>
         <form id="loginForm">
             <input type="email" id="email" placeholder="Correo electrónico" required>
             <input type="password" id="password" placeholder="Contraseña" required>
-            <button type="submit">Iniciar Sesión</button>
+            <button type="submit" class="btn-primary">Entrar</button>
         </form>
-        <a href="register.html">¿No tienes cuenta? Regístrate</a>
+        <a href="register.html" class="link">¿No tienes cuenta? Regístrate aquí</a>
     </div>
 
     <script type="module">
         import { auth } from './firebase-config.js';
-        import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
-                await setPersistence(auth, browserLocalPersistence);
-                await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+                await signInWithEmailAndPassword(auth, email.value, password.value);
                 window.location.href = "dashboard.html";
-            } catch (error) { alert("Error: " + error.message); }
+            } catch (err) { alert("Error al entrar: " + err.message); }
         });
     </script>
 </body>
