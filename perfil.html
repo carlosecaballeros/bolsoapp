@@ -1,123 +1,23 @@
-<!DOCTYPE html>
+}<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Perfil - BolsoApp</title>
+    <title>Historial - BolsoApp</title>
     <style>
-        :root { --blue: #2D5AFE; --bg: #F0F2F5; --text: #1C1E21; --white: #ffffff; --gray: #8E8E93; --red: #FF3B30; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; }
-        
-        .profile-header { background: var(--blue); color: white; padding: 60px 20px 40px; text-align: center; border-radius: 0 0 40px 40px; }
-        .avatar { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 10px; }
-        
-        .mobile-container { padding: 0 16px; margin-top: 20px; }
-        .settings-group { background: var(--white); border-radius: 24px; padding: 8px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .group-title { padding-left: 15px; font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; margin-bottom: 10px; }
-        
-        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #f0f0f0; }
-        .setting-item:last-child { border-bottom: none; }
-        .setting-label { display: flex; flex-direction: column; }
-        .setting-label b { font-size: 15px; color: var(--text); }
-        .setting-label span { font-size: 12px; color: var(--gray); }
-        
-        input[type="text"], input[type="password"] { border: none; text-align: right; color: var(--blue); font-weight: 600; width: 60%; background: transparent; }
-        
-        /* Toggle Switch para Tema y Notificaciones */
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--blue); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        .btn-logout { color: var(--red); font-weight: 700; justify-content: center; margin-top: 10px; }
-        
-        /* BARRA INFERIOR REPETIDA PARA CONSISTENCIA */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; height: 75px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; }
-        .nav-item { text-decoration: none; color: var(--gray); font-size: 11px; text-align: center; display: flex; flex-direction: column; width: 20%; }
-        .nav-item-center { background: var(--blue); color: white !important; width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; margin-top: -45px; border: 5px solid var(--bg); }
+        /* Estilos similares a historial.html anterior */
+        .history-item { background: white; padding: 16px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .in { color: #00A33C; font-weight: 800; }
+        .out { color: #1C1E21; font-weight: 800; }
     </style>
 </head>
 <body>
-
-    <div class="profile-header">
-        <div class="avatar">👤</div>
-        <h2 style="margin:0;" id="userName">Cargando...</h2>
-        <p style="margin:5px 0 0; opacity:0.8; font-size:14px;">Miembro desde Abril 2026</p>
+    <div style="padding: 50px 20px 20px;"><h2>Mi Historial</h2></div>
+    <div class="container" style="padding: 0 16px;">
+        <div class="history-item">
+            <div><b>Pago Semanal</b><br><small>20 Abr • Bolso $300</small></div>
+            <span class="out">- Bs. 1.080,00</span>
+        </div>
     </div>
-
-    <div class="mobile-container">
-        
-        <div class="group-title">Datos Personales</div>
-        <div class="settings-group">
-            <div class="setting-item">
-                <div class="setting-label"><b>Cédula</b><span>V-00.000.000</span></div>
-                <input type="text" id="cedula" value="28.123.456">
-            </div>
-            <div class="setting-item">
-                <div class="setting-label"><b>Nombre Completo</b></div>
-                <input type="text" id="nombre" value="Carlos Eduardo">
-            </div>
-        </div>
-
-        <div class="group-title">Ubicación</div>
-        <div class="settings-group">
-            <div class="setting-item">
-                <div class="setting-label"><b>Dirección</b><span>Calle, casa/apto</span></div>
-                <input type="text" placeholder="Escribe tu dirección">
-            </div>
-            <div class="setting-item">
-                <div class="setting-label"><b>Estado / Ciudad</b></div>
-                <input type="text" value="Carabobo, Valencia">
-            </div>
-        </div>
-
-        <div class="group-title">Preferencias</div>
-        <div class="settings-group">
-            <div class="setting-item">
-                <div class="setting-label"><b>Notificaciones</b><span>Avisos de pago y turnos</span></div>
-                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-            </div>
-            <div class="setting-item">
-                <div class="setting-label"><b>Modo Oscuro</b><span>Ahorro de batería</span></div>
-                <label class="switch"><input type="checkbox" id="darkToggle"><span class="slider"></span></label>
-            </div>
-        </div>
-
-        <div class="group-title">Seguridad</div>
-        <div class="settings-group">
-            <div class="setting-item" onclick="alert('Opción para cambiar clave')">
-                <div class="setting-label"><b>Cambiar Contraseña</b><span>Último cambio: Hace 2 meses</span></div>
-                <span style="color:var(--blue); font-weight:bold;">></span>
-            </div>
-        </div>
-
-        <div class="settings-group">
-            <div class="setting-item btn-logout" onclick="salir()">Cerrar Sesión Segura</div>
-        </div>
-
-    </div>
-
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item"><span>🏠</span><span>Inicio</span></a>
-        <a href="historial.html" class="nav-item"><span>🕒</span><span>Historial</span></a>
-        <a href="grupos.html" class="nav-item nav-item-center"><span>+</span></a>
-        <a href="perfil.html" class="nav-item active"><span>👤</span><span>Perfil</span></a>
-    </nav>
-
-    <script type="module">
-        // Aquí conectamos con Firebase para traer los datos reales
-        import { auth, db } from './firebase-config.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('userName').innerText = user.displayName || "Usuario";
-            } else { window.location.href = "login.html"; }
-        });
-
-        window.salir = () => signOut(auth).then(() => window.location.href="login.html");
-    </script>
-</body>
+    </body>
 </html>
